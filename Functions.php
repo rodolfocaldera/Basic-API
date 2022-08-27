@@ -60,5 +60,19 @@
             $affectedRows = $stmt->rowCount();
             return $affectedRows;
         }
+
+        public function get_token_data($token){
+            $stmt = $this->connection->prepare("select expirate,users.id,rol from sessions join users on users.email = sessions.email where token = '$token'");
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $result;
+        }
+
+        public function insert_post($user_id,$title,$description){
+            $stmt = $this->connection->prepare("INSERT INTO posts (title,description,user_id) values (?,?,?)");
+            $stmt->execute([$title,$description,$user_id]);
+            $affectedRows = $stmt->rowCount();
+            return $affectedRows;
+        }
     }
 ?>

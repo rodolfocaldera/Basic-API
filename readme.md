@@ -3,9 +3,27 @@
 This is a basic REST API on PHP
 
 ## Sections
+## Login
+### Route
+`HOST/API/log`
+
+## Method
+`POST`
+
+### Description
+Data needed:
+- email
+- password
+
+### Response
+Token needed for future requests
+
 ### Create user
 #### Route
 `HOST/API/user`
+
+## Method
+`POST`
 
 ### Description
 To Create a user, you'd to take to account the next data needed:
@@ -14,6 +32,19 @@ To Create a user, you'd to take to account the next data needed:
 - password (alphanumeric only)
 - email
 - role (numbers from 1 to 5, which means 1 for the basic role and 5 for the high)
+
+### Create post
+#### Route
+`HOST/API/post`
+
+## Method
+`POST`
+
+### Description
+To Create a post, you'd to take to account the next data needed:
+- Token
+- Title (alphanumeric only)
+- Description (alphanumeric only)
 
 
 ## Roles
