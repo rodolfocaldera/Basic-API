@@ -1,7 +1,8 @@
 <?php
     require "DatabaseConnector.php";
     require "Functions.php";
-
+    require_once "Login.php";
+    require_once "Responses.php";
     class Controller{
         private $connection;
         private $functions;
@@ -24,11 +25,18 @@
             $response = null;
             if(strtoupper($this->request[2])=="USER"){
                 $response = $this->createUser();
+            }else if(strtoupper($this->request[2])=="LOG"){
+                $login = new Login($this->connection);
+                $response = $login->login();
+            }else{
+                $response = Responses::notFoundResponse();
+                
             }
             
             header($response['status_code_header']);
             if ($response['body']) {
                 echo $response['body'];
+                
             }
         }
 
@@ -46,62 +54,30 @@
                         $password = password_hash($password,PASSWORD_DEFAULT);
                         $affectedRows = $this->functions->create_user($name,$last_name,$password,$email,$role);
                         if($affectedRows > 0){
-                            $response = $this->userCreatedResponse();
+                            $response = Responses::successfullyMessage("User created successfully");
                         }else{
-                            $response = $this->badProcessResponse();
+                            $response = Responses::badProcessResponse();
                         }
                     }else{
-                        $response = $this->badProcessResponse("the email already register, please enter another");
+                        $response = Responses::badProcessResponse("the email already register, please enter another");
                     }
                 }else{
-                    $response = $this->notFoundDataResponse();
+                    $response = Responses::notFoundDataResponse();
                 }
 
             }else{
-                $response = $this->notFoundDataResponse();
+                $response = Responses::notFoundDataResponse();
             }
             
             return $response;
         }
 
         private function validateUserData($name,$last_name,$email,$password,$role){
-            if(ctype_alpha($name) && ctype_alpha($last_name) && ctype_alnum($password) && filter_var($email) && $role >=1 && $role <=5){
+            if(ctype_alpha($name) && ctype_alpha($last_name) && ctype_alnum($password) && filter_var($email, FILTER_VALIDATE_EMAIL) && $role >=1 && $role <=5){
                 return true;
             }else{
                 return false;
             }
-        }
-
-        private function userCreatedResponse(){
-            $response['status_code_header'] = 'HTTP/1.1 200 user created';
-            $response['body'] = json_encode([
-                'message' => 'User created successfully'
-            ]);
-            return $response;
-        }
-
-        private function unprocessableEntityResponse(){
-            $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
-            $response['body'] = json_encode([
-                'error' => 'Invalid data'
-            ]);
-            return $response;
-        }
-
-        private function notFoundDataResponse(){
-            $response['status_code_header'] = 'HTTP/1.1 404 Not found data';
-            $response['body'] = json_encode([
-                'error' => 'Not found data'
-            ]);
-            return $response;
-        }
-
-        private function badProcessResponse($error_message='the request has not been processed, please try later'){
-            $response['status_code_header'] = 'HTTP/1.1 400';
-            $response['body'] = json_encode([
-                'error' => $error_message
-            ]);
-            return $response;
         }
     }
 ?>

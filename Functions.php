@@ -39,5 +39,26 @@
                 exit($e->getMessage());
             }    
         }
+
+        public function login($email,$password){
+            $sql = "select id,password from users where email = '$email'";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $password = null;
+            $id=null;
+            if(count($result)>0){
+                $id = $result[0]["password"];
+                $password = $result[0]["password"];
+            }
+            return ["id"=>$id,"password"=>$password];
+        }
+
+        public function save_session($email,$token,$jwt){
+            $stmt = $this->connection->prepare("INSERT INTO sessions (email,token,inicialice,expirate) values (?,?,?,?)");
+            $stmt->execute([$email,$jwt,$token["iat"],$token["exp"]]);
+            $affectedRows = $stmt->rowCount();
+            return $affectedRows;
+        }
     }
 ?>
