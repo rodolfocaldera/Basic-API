@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS posts (
   title varchar(100) NOT NULL,
   description text NOT NULL,
   user_id int(11) NOT NULL,
+  createAt datetime DEFAULT NULL,
   PRIMARY KEY (id),
 ) 
 

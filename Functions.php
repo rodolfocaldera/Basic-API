@@ -68,11 +68,44 @@
             return $result;
         }
 
-        public function insert_post($user_id,$title,$description){
-            $stmt = $this->connection->prepare("INSERT INTO posts (title,description,user_id) values (?,?,?)");
-            $stmt->execute([$title,$description,$user_id]);
+        public function insert_post($user_id,$title,$description,$createAt){
+            $stmt = $this->connection->prepare("INSERT INTO posts (title,description,user_id,createAt) values (?,?,?,?)");
+            $stmt->execute([$title,$description,$user_id,$createAt]);
             $affectedRows = $stmt->rowCount();
             return $affectedRows;
+        }
+
+        public function update_post($id,$title,$description){
+            $affectedRows = 0;
+            if(isset($title)){
+                $sql = "update posts set title = $title where id = $id";
+                $stmt = $this->connection->prepare();
+                $stmt->execute();
+                $affectedRows = $stmt->rowCount();
+            }
+
+            if(isset($description)){
+                $sql = "update posts set description = $description where id = $id";
+                $stmt = $this->connection->prepare();
+                $stmt->execute();
+                $affectedRows = $stmt->rowCount();
+            }
+            
+            return $affectedRows;
+        }
+
+        public function delete_post($id){
+            $stmt = $this->connection->prepare("Delete from posts where id = $id");
+            $stmt->execute();
+            $affectedRows = $stmt->rowCount();
+            return $affectedRows;
+        }
+
+        public function get_posts(){
+            $stmt = $this->connection->prepare("select title, description,createAt, name, last_name,rol from posts join users on users.id = posts.user_id"); 
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $result;
         }
     }
 ?>
